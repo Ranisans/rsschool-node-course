@@ -1,6 +1,7 @@
 const { program } = require('commander');
 
 const controlArguments = require('./controlArguments');
+const cipherLogic = require('./cipherLogic');
 
 program
   .requiredOption('-s, --shift <type>', 'cipher shift, integer argument')
@@ -20,4 +21,5 @@ program.on('-h, --help', () => {
 
 program.parse(process.argv);
 
-controlArguments(program);
+const argumentsData = controlArguments(program);
+cipherLogic(argumentsData);
