@@ -17,7 +17,7 @@ const controlArguments = program => {
     console.error(SHIFT_ARGUMENT_ERROR);
     exit();
   }
-  result.shift = program.shift;
+  result.shift = parseInt(program.shift, 10);
   result.input = program.input ? program.input : false;
   result.output = program.output ? program.output : false;
   return result;
