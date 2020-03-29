@@ -5,6 +5,8 @@ const { STDIN_MESSAGE } = require('./constant');
 const EncodeDecode = require('./encodeDecode');
 
 const cipherLogic = async argumentsData => {
+  const output = argumentsData.output;
+  const destination = output ? await createWriteStream(output) : process.stdout;
   const input = argumentsData.input;
   let source;
   if (input) {
@@ -13,8 +15,6 @@ const cipherLogic = async argumentsData => {
     console.log(STDIN_MESSAGE);
     source = process.stdin;
   }
-  const output = argumentsData.output;
-  const destination = output ? await createWriteStream(output) : process.stdout;
 
   pipeline(
     source,
