@@ -9,19 +9,22 @@ const A = 'A'.charCodeAt(0);
 const a = 'a'.charCodeAt(0);
 const Z = 'Z'.charCodeAt(0);
 const z = 'z'.charCodeAt(0);
+const letterCount = 26;
+const edge = 1;
 
 class EncodeDecode extends Transform {
   constructor(options) {
     super(options);
     this.shift = options.action === ENCODE ? options.shift : -options.shift;
+    this.shift = this.shift % letterCount;
     this._decoder = new StringDecoder('utf-8');
   }
   _transformLetter(char, min, max) {
     char += this.shift;
     if (char > max) {
-      char = char - max + min;
+      char = char - max + min - edge;
     } else if (char < min) {
-      char += max - min;
+      char += max - min + edge;
     }
     return char;
   }
