@@ -1,14 +1,20 @@
 const { pipeline } = require('stream');
 
 const { createReadStream, createWriteStream } = require('./fileLogic');
-const { FILE_ERROR } = require('./constant');
+const { STDIN_MESSAGE } = require('./constant');
 const EncodeDecode = require('./encodeDecode');
 
 const cipherLogic = async argumentsData => {
   const input = argumentsData.input;
-  const source = input ? await createReadStream(input) : process.stdin;
+  let source;
+  if (input) {
+    source = await createReadStream(input);
+  } else {
+    console.log(STDIN_MESSAGE);
+    source = process.stdin;
+  }
   const output = argumentsData.output;
-  const destination = output ? createWriteStream(output) : process.stdout;
+  const destination = output ? await createWriteStream(output) : process.stdout;
 
   pipeline(
     source,
@@ -19,7 +25,7 @@ const cipherLogic = async argumentsData => {
     destination,
     err => {
       if (err) {
-        console.error('Pipeline failed.', FILE_ERROR);
+        console.error('Pipeline failed.');
       } else {
         console.log('Pipeline succeeded.');
       }
