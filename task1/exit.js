@@ -1,4 +1,4 @@
-module.exports = () => {
+module.exports = (code = 1) => {
   const exit = process.exit;
-  exit(1);
+  exit(code);
 };

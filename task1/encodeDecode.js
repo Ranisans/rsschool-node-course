@@ -55,7 +55,7 @@ class EncodeDecode extends Transform {
     }
 
     if (chunk === ctrlC) {
-      exit();
+      exit(0);
     }
 
     callback(null, chunk);
