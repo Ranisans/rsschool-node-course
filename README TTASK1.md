@@ -27,7 +27,7 @@ CLI tool should accept 5 options (short alias and full name):
 
 1.  **-s, --shift**: a shift - number
 2.  **-i, --input**: an input file, if missed - used console as an input source
-3.  **-o, --output**: an output file, if missed - used console as an output source
+3.  **-o, --output**: an output file (need to be created before running the utility), if missed - used console as an output source
 4.  **-a, --action**: an action encode/decode
 5. **-h, --help**: show help
 

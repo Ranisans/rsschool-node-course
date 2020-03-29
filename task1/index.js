@@ -12,7 +12,7 @@ program
   )
   .option(
     '-o, --output <string',
-    'output file path, if not set - show your message in console'
+    'output file path (need to be created before running the utility), if not set - show your message in console'
   );
 
 program.on('-h, --help', () => {
