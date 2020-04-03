@@ -1,7 +1,7 @@
 const uuid = require('uuid');
 
 const { boards } = require('../../DB/tables');
-const { getColumnById } = require('../columns/logic');
+const { getColumnById, addNewColumn } = require('../columns/logic');
 
 const addColumnsToBoard = columns => {
   return columns.map(columnId => {
@@ -33,10 +33,24 @@ exports.getBoardById = id => {
   return boardRecord;
 };
 
-exports.addNewBoard = ({ title }) => {
+exports.addNewBoard = ({ title, columns }) => {
   const id = uuid();
-  boards.push({ id, title, columns: [] });
-  return true;
+  const newBoard = { id, title };
+  const resultBoard = { id, title };
+  newBoard.columns = [];
+  resultBoard.columns = [];
+  if (columns !== undefined) {
+    for (let i = 0; i < columns.length; i += 1) {
+      const column = addNewColumn(columns[i]);
+      if (column === false) {
+        return false;
+      }
+      newBoard.columns.push(column.id);
+      resultBoard.columns.push(column);
+    }
+  }
+  boards.push(newBoard);
+  return resultBoard;
 };
 
 exports.updateBoardById = ({ id, title, columns }) => {

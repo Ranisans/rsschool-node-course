@@ -38,13 +38,17 @@ router
     res.json(getAllBoard());
   })
   .post(async (req, res) => {
-    const { title } = req.body;
+    const { title, columns } = req.body;
     if (title === undefined) {
       res.sendStatus(ERROR);
       return;
     }
-    const result = addNewBoard({ title });
-    res.sendStatus(result ? OK : SERVER_ERROR);
+    const result = addNewBoard({ title, columns });
+    if (!result) {
+      res.sendStatus(ERROR);
+      return;
+    }
+    res.json(result);
   });
 
 module.exports = router;
