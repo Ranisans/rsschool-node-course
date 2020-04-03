@@ -7,7 +7,12 @@ const {
   getBoardById,
   updateBoardById
 } = require('./logic');
-const { OK, ERROR, SERVER_ERROR, NOT_FOUND } = require('../../statusCodes');
+const {
+  OK_NO_CONTENT,
+  ERROR,
+  SERVER_ERROR,
+  NOT_FOUND
+} = require('../../statusCodes');
 
 router
   .route('/:id')
@@ -34,7 +39,7 @@ router
   .delete(async (req, res) => {
     const { id } = req.params;
     const result = deleteBoardById(id);
-    res.sendStatus(result ? OK : ERROR);
+    res.sendStatus(result ? OK_NO_CONTENT : NOT_FOUND);
   });
 
 router

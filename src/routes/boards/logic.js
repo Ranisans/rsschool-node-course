@@ -129,6 +129,11 @@ exports.deleteBoardById = id => {
     return false;
   }
 
+  // * delete all columns on this board
+  board.columns.forEach(columnId => {
+    deleteColumnById(columnId);
+  });
+
   boards.splice(position, 1);
   return true;
 };
