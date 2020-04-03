@@ -22,9 +22,14 @@ router
   })
   .put(async (req, res) => {
     const { id } = req.params;
+    console.log('put');
     const { title, columns } = req.body;
     const result = updateBoardById({ id, title, columns });
-    res.sendStatus(result ? OK : SERVER_ERROR);
+    if (!result) {
+      res.sendStatus(SERVER_ERROR);
+      return;
+    }
+    res.json(result);
   })
   .delete(async (req, res) => {
     const { id } = req.params;
