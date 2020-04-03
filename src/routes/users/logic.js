@@ -8,13 +8,13 @@ exports.getAllUser = () => {
 };
 
 exports.getUserById = id => {
-  return users.filter(user => user.id === id).map(User.toResponse);
+  return users.filter(user => user.id === id).map(User.toResponse)[0];
 };
 
 exports.addNewUser = ({ name, login, password }) => {
   const id = uuid();
   users.push({ id, name, login, password });
-  return true;
+  return { id, name, login };
 };
 
 exports.updateUserById = ({ id, name, login, password }) => {
@@ -39,7 +39,7 @@ exports.updateUserById = ({ id, name, login, password }) => {
 
   users[position] = newUser;
 
-  return true;
+  return User.toResponse(newUser);
 };
 
 exports.deleteUserById = id => {

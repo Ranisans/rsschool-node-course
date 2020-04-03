@@ -7,18 +7,42 @@ const {
   updateUserById,
   deleteUserById
 } = require('./logic');
-const { OK, ERROR, SERVER_ERROR } = require('../../statusCodes');
+const {
+  OK_NO_CONTENT,
+  ERROR,
+  SERVER_ERROR,
+  NOT_FOUND
+} = require('../../statusCodes');
 
 router
   .route('/:id')
   .get(async (req, res) => {
     const { id } = req.params;
-    res.json(getUserById(id));
+    const user = getUserById(id);
+    if (user === undefined) {
+      res.sendStatus(NOT_FOUND);
+      return;
+    }
+    res.json(user);
+  })
+  .put(async (req, res) => {
+    const { id } = req.params;
+    const { name, login, password } = req.body;
+    if (name === undefined && login === undefined && password === undefined) {
+      res.sendStatus(ERROR);
+      return;
+    }
+    const result = updateUserById({ id, name, login, password });
+    if (!result) {
+      res.sendStatus(SERVER_ERROR);
+      return;
+    }
+    res.json(result);
   })
   .delete(async (req, res) => {
     const { id } = req.params;
     const result = deleteUserById(id);
-    res.sendStatus(result ? OK : ERROR);
+    res.sendStatus(result ? OK_NO_CONTENT : NOT_FOUND);
   });
 
 router
@@ -33,16 +57,11 @@ router
       return;
     }
     const result = addNewUser({ name, login, password });
-    res.sendStatus(result ? OK : SERVER_ERROR);
-  })
-  .put(async (req, res) => {
-    const { id, name, login, password } = req.body;
-    if (id === undefined) {
-      res.sendStatus(ERROR);
+    if (!result) {
+      res.sendStatus(SERVER_ERROR);
       return;
     }
-    const result = updateUserById({ id, name, login, password });
-    res.sendStatus(result ? OK : SERVER_ERROR);
+    res.json(result);
   });
 
 module.exports = router;
