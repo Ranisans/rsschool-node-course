@@ -1,9 +1,24 @@
 const uuid = require('uuid');
 
 const { boards } = require('../../DB/tables');
+const { getColumnById } = require('../columns/logic');
 
 exports.getAllBoard = () => {
-  return boards;
+  const result = [];
+  boards.forEach(singleBoard => {
+    const board = {};
+    board.id = singleBoard.id;
+    board.title = singleBoard.title;
+    board.columns = [];
+    singleBoard.columns.forEach(columnId => {
+      const column = getColumnById(columnId);
+      if (column) {
+        board.columns.push(column);
+      }
+    });
+    result.push(board);
+  });
+  return result;
 };
 
 exports.getBoardById = id => {
