@@ -3,26 +3,34 @@ const uuid = require('uuid');
 const { boards } = require('../../DB/tables');
 const { getColumnById } = require('../columns/logic');
 
+const addColumnsToBoard = columns => {
+  return columns.map(columnId => {
+    const column = getColumnById(columnId);
+    return column ? column : null;
+  });
+};
+
 exports.getAllBoard = () => {
   const result = [];
   boards.forEach(singleBoard => {
     const board = {};
     board.id = singleBoard.id;
     board.title = singleBoard.title;
-    board.columns = [];
-    singleBoard.columns.forEach(columnId => {
-      const column = getColumnById(columnId);
-      if (column) {
-        board.columns.push(column);
-      }
-    });
+    board.columns = addColumnsToBoard(singleBoard.columns);
     result.push(board);
   });
   return result;
 };
 
 exports.getBoardById = id => {
-  return boards.filter(board => board.id === id);
+  const board = boards.filter(singleBoard => singleBoard.id === id)[0];
+  console.log('board', board);
+  if (board === undefined) {
+    return false;
+  }
+  const boardRecord = JSON.parse(JSON.stringify(board));
+  boardRecord.columns = addColumnsToBoard(boardRecord.columns);
+  return boardRecord;
 };
 
 exports.addNewBoard = ({ title }) => {

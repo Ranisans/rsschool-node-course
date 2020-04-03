@@ -7,13 +7,24 @@ const {
   getBoardById,
   updateBoardById
 } = require('./logic');
-const { OK, ERROR, SERVER_ERROR } = require('../../statusCodes');
+const { OK, ERROR, SERVER_ERROR, NOT_FOUND } = require('../../statusCodes');
 
 router
   .route('/:id')
   .get(async (req, res) => {
     const { id } = req.params;
-    res.json(getBoardById(id));
+    const board = getBoardById(id);
+    if (!board) {
+      res.sendStatus(NOT_FOUND);
+      return;
+    }
+    res.json(board);
+  })
+  .put(async (req, res) => {
+    const { id } = req.params;
+    const { title, columns } = req.body;
+    const result = updateBoardById({ id, title, columns });
+    res.sendStatus(result ? OK : SERVER_ERROR);
   })
   .delete(async (req, res) => {
     const { id } = req.params;
@@ -33,15 +44,6 @@ router
       return;
     }
     const result = addNewBoard({ title });
-    res.sendStatus(result ? OK : SERVER_ERROR);
-  })
-  .put(async (req, res) => {
-    const { id, title, columns } = req.body;
-    if (id === undefined) {
-      res.sendStatus(ERROR);
-      return;
-    }
-    const result = updateBoardById({ id, title, columns });
     res.sendStatus(result ? OK : SERVER_ERROR);
   });
 
