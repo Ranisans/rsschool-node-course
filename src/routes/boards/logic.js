@@ -42,15 +42,12 @@ exports.addNewBoard = ({ title, columns }) => {
 
 exports.updateBoardById = ({ id, title, columns }) => {
   const [board, position] = getSingleElementById(boards, id);
-  console.log('exports.updateBoardById -> board', board);
 
   if (board === undefined) {
     return false;
   }
 
-  const newBoard = {};
-  newBoard.id = id;
-  newBoard.title = title ? title : board.title;
+  const newBoard = { id, title };
 
   const columnsWithId = [];
   const columnsWithoutId = [];

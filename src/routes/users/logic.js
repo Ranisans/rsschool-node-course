@@ -25,11 +25,7 @@ exports.updateUserById = ({ id, name, login, password }) => {
     return false;
   }
 
-  const newUser = {};
-  newUser.id = id;
-  newUser.name = name ? name : user.name;
-  newUser.login = login ? login : user.login;
-  newUser.password = password ? password : user.password;
+  const newUser = { id, name, login, password };
 
   users[position] = newUser;
 
