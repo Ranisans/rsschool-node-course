@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
 
-const { users, boards, columns, tasks } = require('./tables');
+const { users, boards, tasks } = require('./tables');
 
 const readData = async (filename, table) => {
   return fs
@@ -21,7 +21,6 @@ const readData = async (filename, table) => {
 const generateDB = async () => {
   await readData('./src/DB/data/Users.json', users);
   await readData('./src/DB/data/Boards.json', boards);
-  await readData('./src/DB/data/Columns.json', columns);
   await readData('./src/DB/data/Tasks.json', tasks);
 };
 
