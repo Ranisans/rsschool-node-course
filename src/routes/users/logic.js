@@ -2,6 +2,7 @@ const uuid = require('uuid');
 
 const { users } = require('../../DB/tables');
 const { User } = require('../../DB/models');
+const getSingleElementById = require('../logic');
 
 exports.getAllUser = () => {
   return users.map(User.toResponse);
@@ -18,14 +19,7 @@ exports.addNewUser = ({ name, login, password }) => {
 };
 
 exports.updateUserById = ({ id, name, login, password }) => {
-  let position;
-  const user = users.filter((singleUser, index) => {
-    if (singleUser.id === id) {
-      position = index;
-      return true;
-    }
-    return false;
-  })[0];
+  const [user, position] = getSingleElementById(users, id);
 
   if (user === undefined) {
     return false;
@@ -44,14 +38,8 @@ exports.updateUserById = ({ id, name, login, password }) => {
 
 exports.deleteUserById = id => {
   // TODO delete all task with this user-id
-  let position;
-  const user = users.filter((singleUser, index) => {
-    if (singleUser.id === id) {
-      position = index;
-      return true;
-    }
-    return false;
-  })[0];
+
+  const [user, position] = getSingleElementById(users, id);
 
   if (user === undefined) {
     return false;

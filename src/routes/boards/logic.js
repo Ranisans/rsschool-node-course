@@ -2,6 +2,7 @@ const uuid = require('uuid');
 
 const { boards } = require('../../DB/tables');
 const { addNewColumn } = require('../columns/logic');
+const getSingleElementById = require('../logic');
 
 const createColumns = columns => {
   const result = [];
@@ -40,14 +41,8 @@ exports.addNewBoard = ({ title, columns }) => {
 };
 
 exports.updateBoardById = ({ id, title, columns }) => {
-  let position;
-  const board = boards.filter((singleBoard, index) => {
-    if (singleBoard.id === id) {
-      position = index;
-      return true;
-    }
-    return false;
-  })[0];
+  const [board, position] = getSingleElementById(boards, id);
+  console.log('exports.updateBoardById -> board', board);
 
   if (board === undefined) {
     return false;
@@ -68,7 +63,7 @@ exports.updateBoardById = ({ id, title, columns }) => {
     }
   });
 
-  console.log('exports.updateBoardById -> newBoard', newBoard);
+  newBoard.columns = columnsWithId.concat(createColumns(columnsWithoutId));
 
   boards[position] = newBoard;
 
@@ -77,14 +72,8 @@ exports.updateBoardById = ({ id, title, columns }) => {
 
 exports.deleteBoardById = id => {
   // TODO delete all task with this board-id
-  let position;
-  const board = boards.filter((singleBoard, index) => {
-    if (singleBoard.id === id) {
-      position = index;
-      return true;
-    }
-    return false;
-  })[0];
+
+  const [board, position] = getSingleElementById(boards, id);
 
   if (board === undefined) {
     return false;
