@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-const { users } = require('../../DB/tables');
+const { users, tasks } = require('../../DB/tables');
 const { User } = require('../../DB/models');
 const getSingleElementById = require('../logic');
 
@@ -33,13 +33,17 @@ exports.updateUserById = ({ id, name, login, password }) => {
 };
 
 exports.deleteUserById = id => {
-  // TODO delete all task with this user-id
-
   const [user, position] = getSingleElementById(users, id);
 
   if (user === undefined) {
     return false;
   }
+
+  tasks.forEach(task => {
+    if (task.userId === user.id) {
+      task.userId = null;
+    }
+  });
 
   users.splice(position, 1);
   return true;
