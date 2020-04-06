@@ -1,14 +1,17 @@
-const uuid = require('uuid');
-
-const { tasks } = require('../../DB/tables');
-const getSingleElementById = require('../logic');
+const {
+  addNewTask,
+  deleteTaskById,
+  getAllTasksByBoardId,
+  getTaskById,
+  updateTaskById
+} = require('./repository');
 
 exports.getAllTasksByBoardId = id => {
-  return tasks.filter(task => task.boardId === id);
+  return getAllTasksByBoardId(id);
 };
 
 exports.getTaskById = id => {
-  return tasks.filter(task => task.id === id)[0];
+  return getTaskById(id);
 };
 
 exports.addNewTask = ({
@@ -19,17 +22,14 @@ exports.addNewTask = ({
   boardId,
   columnId
 }) => {
-  const newTask = {
-    id: uuid(),
+  return addNewTask({
     title,
     order,
     description,
     userId,
     boardId,
     columnId
-  };
-  tasks.push(newTask);
-  return newTask;
+  });
 };
 
 exports.updateTaskById = ({
@@ -41,13 +41,7 @@ exports.updateTaskById = ({
   boardId,
   columnId
 }) => {
-  const [task, position] = getSingleElementById(tasks, id);
-
-  if (task === undefined) {
-    return false;
-  }
-
-  const newTask = {
+  return updateTaskById({
     id,
     title,
     order,
@@ -55,19 +49,9 @@ exports.updateTaskById = ({
     userId,
     boardId,
     columnId
-  };
-
-  tasks[position] = newTask;
-  return newTask;
+  });
 };
 
 exports.deleteTaskById = id => {
-  const [task, position] = getSingleElementById(tasks, id);
-
-  if (task === undefined) {
-    return false;
-  }
-
-  tasks.splice(position, 1);
-  return true;
+  return deleteTaskById(id);
 };
