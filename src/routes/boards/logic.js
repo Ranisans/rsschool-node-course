@@ -2,6 +2,7 @@ const uuid = require('uuid');
 
 const { boards } = require('../../DB/tables');
 const { addNewColumn } = require('../columns/logic');
+const { getAllTasksByBoardId, deleteTaskById } = require('../tasks/logic');
 const getSingleElementById = require('../logic');
 
 const createColumns = columns => {
@@ -68,13 +69,15 @@ exports.updateBoardById = ({ id, title, columns }) => {
 };
 
 exports.deleteBoardById = id => {
-  // TODO delete all task with this board-id
-
   const [board, position] = getSingleElementById(boards, id);
 
   if (board === undefined) {
     return false;
   }
+
+  const boardsTasksId = getAllTasksByBoardId(board.id).map(task => task.id);
+
+  boardsTasksId.forEach(taskId => deleteTaskById(taskId));
 
   boards.splice(position, 1);
   return true;
