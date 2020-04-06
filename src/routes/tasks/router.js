@@ -24,7 +24,6 @@ router
   .route('/:taskId')
   .get(async (req, res) => {
     const { taskId } = req.params;
-    console.log('taskId', taskId);
     const task = getTaskById(taskId);
     if (!task) {
       res.sendStatus(NOT_FOUND);
