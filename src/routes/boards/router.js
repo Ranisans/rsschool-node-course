@@ -2,6 +2,7 @@ const router = require('express').Router();
 const Joi = require('@hapi/joi');
 
 const middleware = require('../joiMiddleware');
+const taskRouter = require('../tasks/router');
 
 const boardSchema = Joi.object({
   title: Joi.string().required(),
@@ -73,5 +74,14 @@ router
     }
     res.json(result);
   });
+
+router.use(
+  '/:id/tasks',
+  (req, res, next) => {
+    req.body.boardId = req.params.id;
+    next();
+  },
+  taskRouter
+);
 
 module.exports = router;
