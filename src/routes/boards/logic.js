@@ -1,18 +1,7 @@
 const uuid = require('uuid');
 
 const { boards } = require('../../DB/tables');
-const {
-  getColumnById,
-  addNewColumn,
-  deleteColumnById
-} = require('../columns/logic');
-
-const addColumnsToBoard = columns => {
-  return columns.map(columnId => {
-    const column = getColumnById(columnId);
-    return column ? column : null;
-  });
-};
+const { addNewColumn } = require('../columns/logic');
 
 const createColumns = columns => {
   const result = [];
@@ -27,15 +16,7 @@ const createColumns = columns => {
 };
 
 exports.getAllBoard = () => {
-  const result = [];
-  boards.forEach(singleBoard => {
-    const board = {};
-    board.id = singleBoard.id;
-    board.title = singleBoard.title;
-    board.columns = addColumnsToBoard(singleBoard.columns);
-    result.push(board);
-  });
-  return result;
+  return boards;
 };
 
 exports.getBoardById = id => {
@@ -43,29 +24,19 @@ exports.getBoardById = id => {
   if (board === undefined) {
     return false;
   }
-  const boardRecord = JSON.parse(JSON.stringify(board));
-  boardRecord.columns = addColumnsToBoard(boardRecord.columns);
-  return boardRecord;
+  return board;
 };
 
 exports.addNewBoard = ({ title, columns }) => {
   const id = uuid();
   const newBoard = { id, title };
-  const resultBoard = { id, title };
-  newBoard.columns = [];
-  resultBoard.columns = [];
-  if (columns !== undefined) {
-    const newColumns = createColumns(columns);
-    if (!newColumns) {
-      return false;
-    }
-    newColumns.forEach(column => {
-      newBoard.columns.push(column.id);
-    });
-    resultBoard.columns = newColumns;
+  const newColumns = createColumns(columns);
+  if (newColumns === false) {
+    return false;
   }
+  newBoard.columns = newColumns;
   boards.push(newBoard);
-  return resultBoard;
+  return newBoard;
 };
 
 exports.updateBoardById = ({ id, title, columns }) => {
@@ -83,35 +54,25 @@ exports.updateBoardById = ({ id, title, columns }) => {
   }
 
   const newBoard = {};
-  const resultBoard = {};
   newBoard.id = id;
-  resultBoard.id = id;
   newBoard.title = title ? title : board.title;
-  resultBoard.title = newBoard.title;
 
-  if (columns !== undefined) {
-    // * try create all column
-    // ? But what if there is not enough data not in the first column?
-    const newColumns = createColumns(columns);
-    if (!newColumns) {
-      return false;
+  const columnsWithId = [];
+  const columnsWithoutId = [];
+
+  columns.forEach(column => {
+    if (column.id === undefined) {
+      columnsWithoutId.push(column);
+    } else {
+      columnsWithId.push(column);
     }
-    // * delete created before columns
-    board.columns.forEach(columnId => {
-      deleteColumnById(columnId);
-    });
-    resultBoard.columns = newColumns;
-    newBoard.columns = [];
-    newColumns.forEach(column => {
-      newBoard.columns.push(column.id);
-    });
-  } else {
-    newBoard.columns = board.columns;
-  }
+  });
+
+  console.log('exports.updateBoardById -> newBoard', newBoard);
 
   boards[position] = newBoard;
 
-  return resultBoard;
+  return newBoard;
 };
 
 exports.deleteBoardById = id => {
@@ -128,11 +89,6 @@ exports.deleteBoardById = id => {
   if (board === undefined) {
     return false;
   }
-
-  // * delete all columns on this board
-  board.columns.forEach(columnId => {
-    deleteColumnById(columnId);
-  });
 
   boards.splice(position, 1);
   return true;

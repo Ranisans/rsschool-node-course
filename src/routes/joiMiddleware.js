@@ -4,7 +4,7 @@ const middleware = schema => {
   return (req, res, next) => {
     const { error } = schema.validate(req.body, {
       abortEarly: false,
-      allowUnknown: false
+      allowUnknown: true
     });
     const valid = error === undefined;
 
