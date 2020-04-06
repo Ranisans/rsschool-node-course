@@ -1,4 +1,18 @@
 const router = require('express').Router();
+const Joi = require('@hapi/joi');
+
+const middleware = require('../joiMiddleware');
+
+const boardSchema = Joi.object({
+  title: Joi.string().required(),
+  columns: Joi.array().items(
+    Joi.object({
+      id: Joi.string(),
+      title: Joi.string().required(),
+      order: Joi.number().required()
+    })
+  )
+});
 
 const {
   addNewBoard,
@@ -25,9 +39,8 @@ router
     }
     res.json(board);
   })
-  .put(async (req, res) => {
+  .put(middleware(boardSchema), async (req, res) => {
     const { id } = req.params;
-    console.log('put');
     const { title, columns } = req.body;
     const result = updateBoardById({ id, title, columns });
     if (!result) {
@@ -47,7 +60,7 @@ router
   .get(async (req, res) => {
     res.json(getAllBoard());
   })
-  .post(async (req, res) => {
+  .post(middleware(boardSchema), async (req, res) => {
     const { title, columns } = req.body;
     if (title === undefined) {
       res.sendStatus(ERROR);

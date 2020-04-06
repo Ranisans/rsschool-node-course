@@ -7,9 +7,6 @@ exports.getColumnById = id => {
 };
 
 exports.addNewColumn = ({ title, order }) => {
-  if (title === undefined || order === undefined) {
-    return false;
-  }
   const newColumn = {};
   newColumn.id = uuid();
   newColumn.title = title;
