@@ -7,6 +7,7 @@ const userRouter = require('./routes/users/router');
 const boardsRouter = require('./routes/boards/router');
 const { logMiddleware, errorMiddleware } = require('./middleware');
 const { ErrorHandler } = require('./handlers');
+const { logHandler } = require('./handlers');
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -32,5 +33,11 @@ app.use('*', () => {
 });
 
 app.use(errorMiddleware);
+
+process.on('unhandledRejection', error => {
+  logHandler({ error });
+  const exit = process.exit;
+  exit(1);
+});
 
 module.exports = app;

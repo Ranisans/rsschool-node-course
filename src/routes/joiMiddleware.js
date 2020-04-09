@@ -15,7 +15,6 @@ const middleware = schema => {
       const { details } = error;
       const message = details.map(i => i.message).join(',');
 
-      console.log('error', message);
       res.status(ERROR).json({ error: message });
     }
   };

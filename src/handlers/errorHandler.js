@@ -15,8 +15,7 @@ const handleError = (err, req, res) => {
   if (statusCode === null || message === undefined) {
     const { url, method, body, params } = req;
     logHandler({
-      error: true,
-      message: `Server Error with request: ${(url, method, body, params)}`
+      warning: `Server Error with request: ${(url, method, body, params)}`
     });
     res.status(SERVER_ERROR).json({
       status: 'error',
