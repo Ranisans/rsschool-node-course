@@ -1,4 +1,4 @@
-const logHandler = require('../logHandler');
+const { logHandler } = require('../handlers');
 
 const logMiddleware = (req, res, next) => {
   const { url, method, body, params } = req;
