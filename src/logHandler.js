@@ -1,12 +1,28 @@
+const winston = require('winston');
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  defaultMeta: { service: 'user-service' },
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'default.log' })
+  ]
+});
+
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple()
+    })
+  );
+}
+
 const logHandler = ({ error, message }) => {
-  // TODO add write to file
-  const date = new Date();
-  const dateTime = `${date.getDate()}:${date.getMonth() +
-    1}:${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}:${date.getMilliseconds()}`;
   if (error) {
-    console.error(`${dateTime} - ${error}: ${message}`);
+    logger.error(message);
   } else {
-    console.log(`${dateTime} - ${message}`);
+    logger.info(message);
   }
 };
 
