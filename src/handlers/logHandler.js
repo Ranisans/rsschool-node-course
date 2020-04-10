@@ -1,9 +1,9 @@
 const { createLogger, format, transports } = require('winston');
 
 const errorStackFormat = format(info => {
-  if (info.message instanceof Error) {
+  if (info instanceof Error) {
     return Object.assign({}, info, {
-      message: info.message.stack
+      message: info.stack
     });
   }
   return info;

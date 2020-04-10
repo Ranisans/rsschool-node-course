@@ -34,10 +34,14 @@ app.use('*', () => {
 
 app.use(errorMiddleware);
 
-process.on('unhandledRejection', error => {
-  logHandler({ error });
-  const exit = process.exit;
-  exit(1);
-});
+process
+  .on('unhandledRejection', warning => {
+    logHandler({ warning });
+  })
+  .on('uncaughtException', error => {
+    logHandler({ error });
+    const exit = process.exit;
+    exit(1);
+  });
 
 module.exports = app;
