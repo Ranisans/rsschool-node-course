@@ -3,6 +3,7 @@ const Joi = require('@hapi/joi');
 
 const middleware = require('../joiMiddleware');
 const taskRouter = require('../tasks/router');
+const { ErrorHandler } = require('../../handlers');
 
 const boardSchema = Joi.object({
   title: Joi.string().required(),
@@ -22,57 +23,69 @@ const {
   getBoardById,
   updateBoardById
 } = require('./logic');
-const {
-  OK_NO_CONTENT,
-  ERROR,
-  SERVER_ERROR,
-  NOT_FOUND
-} = require('../../statusCodes');
+const { OK_NO_CONTENT, ERROR, NOT_FOUND } = require('../../statusCodes');
 
 router
   .route('/:id')
-  .get(async (req, res) => {
-    const { id } = req.params;
-    const board = getBoardById(id);
-    if (!board) {
-      res.sendStatus(NOT_FOUND);
-      return;
+  .get(async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const board = getBoardById(id);
+      if (!board) {
+        throw new ErrorHandler(NOT_FOUND, 'Not Found');
+      }
+      res.json(board);
+    } catch (error) {
+      next(error);
     }
-    res.json(board);
   })
-  .put(middleware(boardSchema), async (req, res) => {
-    const { id } = req.params;
-    const { title, columns } = req.body;
-    const result = updateBoardById({ id, title, columns });
-    if (!result) {
-      res.sendStatus(SERVER_ERROR);
-      return;
+  .put(middleware(boardSchema), async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { title, columns } = req.body;
+      const result = updateBoardById({ id, title, columns });
+      if (!result) {
+        throw new ErrorHandler(NOT_FOUND, 'Not Found');
+      }
+      res.json(result);
+    } catch (error) {
+      next(error);
     }
-    res.json(result);
   })
-  .delete(async (req, res) => {
-    const { id } = req.params;
-    const result = deleteBoardById(id);
-    res.sendStatus(result ? OK_NO_CONTENT : NOT_FOUND);
+  .delete(async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const result = deleteBoardById(id);
+      if (result) {
+        res.sendStatus(OK_NO_CONTENT);
+        return;
+      }
+      throw new ErrorHandler(NOT_FOUND, 'Not Found');
+    } catch (error) {
+      next(error);
+    }
   });
 
 router
   .route('/')
-  .get(async (req, res) => {
-    res.json(getAllBoard());
+  .get(async (req, res, next) => {
+    try {
+      res.json(getAllBoard());
+    } catch (error) {
+      next(error);
+    }
   })
-  .post(middleware(boardSchema), async (req, res) => {
-    const { title, columns } = req.body;
-    if (title === undefined) {
-      res.sendStatus(ERROR);
-      return;
+  .post(middleware(boardSchema), async (req, res, next) => {
+    try {
+      const { title, columns } = req.body;
+      const result = addNewBoard({ title, columns });
+      if (!result) {
+        throw new ErrorHandler(ERROR, 'Bad request');
+      }
+      res.json(result);
+    } catch (error) {
+      next(error);
     }
-    const result = addNewBoard({ title, columns });
-    if (!result) {
-      res.sendStatus(ERROR);
-      return;
-    }
-    res.json(result);
   });
 
 router.use(

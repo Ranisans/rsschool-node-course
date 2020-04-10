@@ -11,8 +11,7 @@ class ErrorHandler extends Error {
 
 const handleError = (err, req, res) => {
   const { statusCode, message } = err;
-
-  if (statusCode === null || message === undefined) {
+  if (statusCode === undefined || message === undefined) {
     const { url, method, body, params } = req;
     logHandler({
       warning: `Server Error with request: ${(url, method, body, params)}`

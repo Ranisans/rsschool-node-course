@@ -2,6 +2,7 @@ const router = require('express').Router();
 const Joi = require('@hapi/joi');
 
 const middleware = require('../joiMiddleware');
+const { ErrorHandler } = require('../../handlers');
 
 const {
   addNewTask,
@@ -10,7 +11,7 @@ const {
   getTaskById,
   updateTaskById
 } = require('./logic');
-const { OK_NO_CONTENT, SERVER_ERROR, NOT_FOUND } = require('../../statusCodes');
+const { OK_NO_CONTENT, ERROR, NOT_FOUND } = require('../../statusCodes');
 
 const taskUpdateSchema = Joi.object({
   title: Joi.string().required(),
@@ -22,64 +23,81 @@ const taskUpdateSchema = Joi.object({
 
 router
   .route('/:taskId')
-  .get(async (req, res) => {
-    const { taskId } = req.params;
-    const task = getTaskById(taskId);
-    if (!task) {
-      res.sendStatus(NOT_FOUND);
-      return;
+  .get(async (req, res, next) => {
+    try {
+      const { taskId } = req.params;
+      const task = getTaskById(taskId);
+      if (!task) {
+        throw new ErrorHandler(NOT_FOUND, 'Not Found');
+      }
+      res.json(task);
+    } catch (error) {
+      next(error);
     }
-    res.json(task);
   })
-  .put(middleware(taskUpdateSchema), async (req, res) => {
-    const { taskId } = req.params;
-    const { title, order, description, userId, boardId, columnId } = req.body;
-    const result = updateTaskById({
-      id: taskId,
-      title,
-      order,
-      description,
-      userId,
-      boardId,
-      columnId
-    });
+  .put(middleware(taskUpdateSchema), async (req, res, next) => {
+    try {
+      const { taskId } = req.params;
+      const { title, order, description, userId, boardId, columnId } = req.body;
+      const result = updateTaskById({
+        id: taskId,
+        title,
+        order,
+        description,
+        userId,
+        boardId,
+        columnId
+      });
 
-    if (!result) {
-      res.sendStatus(SERVER_ERROR);
-      return;
+      if (!result) {
+        throw new ErrorHandler(ERROR, 'Bad request');
+      }
+      res.json(result);
+    } catch (error) {
+      next(error);
     }
-    res.json(result);
   })
-  .delete(async (req, res) => {
-    const { taskId } = req.params;
-    const result = deleteTaskById(taskId);
-    res.sendStatus(result ? OK_NO_CONTENT : NOT_FOUND);
+  .delete(async (req, res, next) => {
+    try {
+      const { taskId } = req.params;
+      const result = deleteTaskById(taskId);
+      res.sendStatus(result ? OK_NO_CONTENT : NOT_FOUND);
+    } catch (error) {
+      next(error);
+    }
   });
 
 router
   .route('/')
-  .get(async (req, res) => {
-    const { boardId } = req.body;
-    const result = getAllTasksByBoardId(boardId);
-    if (result === false) {
-      res.sendStatus(NOT_FOUND);
-      return;
+  .get(async (req, res, next) => {
+    try {
+      const { boardId } = req.body;
+      const result = getAllTasksByBoardId(boardId);
+      if (result === false) {
+        throw new ErrorHandler(NOT_FOUND, 'Not Found');
+      }
+      res.json(result);
+    } catch (error) {
+      next(error);
     }
-    res.json(result);
   })
-  .post(middleware(taskUpdateSchema), async (req, res) => {
-    const { title, order, description, userId, boardId, columnId } = req.body;
+  .post(middleware(taskUpdateSchema), async (req, res, next) => {
+    try {
+      const { title, order, description, userId, boardId, columnId } = req.body;
 
-    const result = addNewTask({
-      title,
-      order,
-      description,
-      userId,
-      boardId,
-      columnId
-    });
+      const result = addNewTask({
+        title,
+        order,
+        description,
+        userId,
+        boardId,
+        columnId
+      });
 
-    res.json(result);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
   });
 
 module.exports = router;
