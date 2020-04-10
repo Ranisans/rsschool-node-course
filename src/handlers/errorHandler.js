@@ -1,5 +1,5 @@
 const { SERVER_ERROR } = require('../statusCodes');
-const { logHandler } = require('./logHandler');
+const logHandler = require('./logHandler');
 
 class ErrorHandler extends Error {
   constructor(statusCode, message) {
@@ -12,16 +12,17 @@ class ErrorHandler extends Error {
 const handleError = (err, req, res) => {
   const { statusCode, message } = err;
   if (statusCode === undefined || message === undefined) {
-    const { url, method, body, params } = req;
+    console.log('handleError -> err', err);
     logHandler({
-      warning: `Server Error with request: ${(url, method, body, params)}`
+      error: err
     });
     res.status(SERVER_ERROR).json({
       status: 'error',
       statusCode: SERVER_ERROR,
       message: 'Server Error'
     });
-    return;
+    const exit = process.exit;
+    exit(1);
   }
 
   res.status(statusCode).json({
