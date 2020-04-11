@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Joi = require('@hapi/joi');
+const HttpStatus = require('http-status-codes');
 
 const middleware = require('../joiMiddleware');
 const taskRouter = require('../tasks/router');
@@ -23,7 +24,6 @@ const {
   getBoardById,
   updateBoardById
 } = require('./logic');
-const { OK_NO_CONTENT, ERROR, NOT_FOUND } = require('../../statusCodes');
 
 router
   .route('/:id')
@@ -32,7 +32,10 @@ router
       const { id } = req.params;
       const board = getBoardById(id);
       if (!board) {
-        throw new ErrorHandler(NOT_FOUND, 'Not Found');
+        throw new ErrorHandler(
+          HttpStatus.NOT_FOUND,
+          HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+        );
       }
       res.json(board);
     } catch (error) {
@@ -45,7 +48,10 @@ router
       const { title, columns } = req.body;
       const result = updateBoardById({ id, title, columns });
       if (!result) {
-        throw new ErrorHandler(NOT_FOUND, 'Not Found');
+        throw new ErrorHandler(
+          HttpStatus.NOT_FOUND,
+          HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+        );
       }
       res.json(result);
     } catch (error) {
@@ -57,10 +63,13 @@ router
       const { id } = req.params;
       const result = deleteBoardById(id);
       if (result) {
-        res.sendStatus(OK_NO_CONTENT);
+        res.sendStatus(HttpStatus.NO_CONTENT);
         return;
       }
-      throw new ErrorHandler(NOT_FOUND, 'Not Found');
+      throw new ErrorHandler(
+        HttpStatus.NOT_FOUND,
+        HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+      );
     } catch (error) {
       next(error);
     }
@@ -80,7 +89,10 @@ router
       const { title, columns } = req.body;
       const result = addNewBoard({ title, columns });
       if (!result) {
-        throw new ErrorHandler(ERROR, 'Bad request');
+        throw new ErrorHandler(
+          HttpStatus.BAD_REQUEST,
+          HttpStatus.getStatusText(HttpStatus.BAD_REQUEST)
+        );
       }
       res.json(result);
     } catch (error) {

@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Joi = require('@hapi/joi');
+const HttpStatus = require('http-status-codes');
 
 const middleware = require('../joiMiddleware');
 const { ErrorHandler } = require('../../handlers');
@@ -11,7 +12,6 @@ const {
   getTaskById,
   updateTaskById
 } = require('./logic');
-const { OK_NO_CONTENT, ERROR, NOT_FOUND } = require('../../statusCodes');
 
 const taskUpdateSchema = Joi.object({
   title: Joi.string().required(),
@@ -28,7 +28,10 @@ router
       const { taskId } = req.params;
       const task = getTaskById(taskId);
       if (!task) {
-        throw new ErrorHandler(NOT_FOUND, 'Not Found');
+        throw new ErrorHandler(
+          HttpStatus.NOT_FOUND,
+          HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+        );
       }
       res.json(task);
     } catch (error) {
@@ -50,7 +53,10 @@ router
       });
 
       if (!result) {
-        throw new ErrorHandler(ERROR, 'Bad request');
+        throw new ErrorHandler(
+          HttpStatus.BAD_REQUEST,
+          HttpStatus.getStatusText(HttpStatus.BAD_REQUEST)
+        );
       }
       res.json(result);
     } catch (error) {
@@ -61,7 +67,14 @@ router
     try {
       const { taskId } = req.params;
       const result = deleteTaskById(taskId);
-      res.sendStatus(result ? OK_NO_CONTENT : NOT_FOUND);
+      if (result) {
+        res.sendStatus(HttpStatus.NO_CONTENT);
+        return;
+      }
+      throw new ErrorHandler(
+        HttpStatus.NOT_FOUND,
+        HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+      );
     } catch (error) {
       next(error);
     }
@@ -74,7 +87,10 @@ router
       const { boardId } = req.body;
       const result = getAllTasksByBoardId(boardId);
       if (result === false) {
-        throw new ErrorHandler(NOT_FOUND, 'Not Found');
+        throw new ErrorHandler(
+          HttpStatus.NOT_FOUND,
+          HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+        );
       }
       res.json(result);
     } catch (error) {

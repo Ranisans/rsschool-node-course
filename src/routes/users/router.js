@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const HttpStatus = require('http-status-codes');
 
 const {
   getAllUser,
@@ -7,7 +8,6 @@ const {
   updateUserById,
   deleteUserById
 } = require('./logic');
-const { OK_NO_CONTENT, ERROR, NOT_FOUND } = require('../../statusCodes');
 const { ErrorHandler } = require('../../handlers');
 
 router
@@ -17,7 +17,10 @@ router
       const { id } = req.params;
       const user = getUserById(id);
       if (user === undefined) {
-        throw new ErrorHandler(NOT_FOUND, 'Not Found');
+        throw new ErrorHandler(
+          HttpStatus.NOT_FOUND,
+          HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+        );
       }
       res.json(user);
     } catch (error) {
@@ -29,11 +32,17 @@ router
       const { id } = req.params;
       const { name, login, password } = req.body;
       if (name === undefined && login === undefined && password === undefined) {
-        throw new ErrorHandler(ERROR, 'Bad request');
+        throw new ErrorHandler(
+          HttpStatus.BAD_REQUEST,
+          HttpStatus.getStatusText(HttpStatus.BAD_REQUEST)
+        );
       }
       const result = updateUserById({ id, name, login, password });
       if (!result) {
-        throw new ErrorHandler(ERROR, 'Bad request');
+        throw new ErrorHandler(
+          HttpStatus.BAD_REQUEST,
+          HttpStatus.getStatusText(HttpStatus.BAD_REQUEST)
+        );
       }
       res.json(result);
     } catch (error) {
@@ -45,10 +54,13 @@ router
       const { id } = req.params;
       const result = deleteUserById(id);
       if (result) {
-        res.sendStatus(OK_NO_CONTENT);
+        res.sendStatus(HttpStatus.NO_CONTENT);
         return;
       }
-      throw new ErrorHandler(NOT_FOUND, 'Not Found');
+      throw new ErrorHandler(
+        HttpStatus.NOT_FOUND,
+        HttpStatus.getStatusText(HttpStatus.NOT_FOUND)
+      );
     } catch (error) {
       next(error);
     }
@@ -67,7 +79,10 @@ router
     try {
       const { name, login, password } = req.body;
       if (name === undefined || login === undefined || password === undefined) {
-        throw new ErrorHandler(ERROR, 'Bad request');
+        throw new ErrorHandler(
+          HttpStatus.BAD_REQUEST,
+          HttpStatus.getStatusText(HttpStatus.BAD_REQUEST)
+        );
       }
       const result = addNewUser({ name, login, password });
       res.json(result);

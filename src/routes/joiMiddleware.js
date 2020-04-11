@@ -1,4 +1,4 @@
-const { ERROR } = require('../statusCodes');
+const HttpStatus = require('http-status-codes');
 
 const middleware = schema => {
   return (req, res, next) => {
@@ -15,7 +15,7 @@ const middleware = schema => {
       const { details } = error;
       const message = details.map(i => i.message).join(',');
 
-      res.status(ERROR).json({ error: message });
+      res.status(HttpStatus.BAD_REQUEST).json({ error: message });
     }
   };
 };

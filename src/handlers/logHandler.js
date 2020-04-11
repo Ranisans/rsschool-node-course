@@ -1,21 +1,12 @@
 const { createLogger, format, transports } = require('winston');
 
-const errorStackFormat = format(info => {
-  if (info instanceof Error) {
-    return Object.assign({}, info, {
-      message: info.stack
-    });
-  }
-  return info;
-});
-
 const logger = createLogger({
   level: 'info',
   format: format.combine(
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'
     }),
-    errorStackFormat(),
+    format.errors({ stack: true }),
     format.json()
   ),
   defaultMeta: { service: 'user-service' },

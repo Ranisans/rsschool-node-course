@@ -1,4 +1,5 @@
-const { SERVER_ERROR } = require('../statusCodes');
+const HttpStatus = require('http-status-codes');
+
 const logHandler = require('./logHandler');
 
 class ErrorHandler extends Error {
@@ -16,9 +17,9 @@ const handleError = (err, req, res) => {
     logHandler({
       error: err
     });
-    res.status(SERVER_ERROR).json({
+    res.status(HttpStatus.SERVER_ERROR).json({
       status: 'error',
-      statusCode: SERVER_ERROR,
+      statusCode: HttpStatus.SERVER_ERROR,
       message: 'Server Error'
     });
     const exit = process.exit;
