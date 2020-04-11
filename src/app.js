@@ -28,13 +28,11 @@ app.use('/users', userRouter);
 app.use('/boards', boardsRouter);
 
 app.get('/crash-promise', (req, res) => {
-  console.log('rejecting promise exception');
   Promise.reject({ message: 'catch me with unhandledRejection' });
   res.send('You catch me with unhandledRejection, because Promise rejected');
 });
 
 app.get('/crash-500', () => {
-  console.log('uncaught exception');
   throw new Error('uncaught exception');
 });
 

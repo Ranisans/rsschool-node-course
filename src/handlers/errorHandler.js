@@ -13,7 +13,6 @@ class ErrorHandler extends Error {
 const handleError = (err, req, res) => {
   const { statusCode, message } = err;
   if (statusCode === undefined || message === undefined) {
-    console.log('handleError -> err', err);
     logHandler({
       error: err
     });

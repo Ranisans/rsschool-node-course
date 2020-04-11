@@ -28,6 +28,8 @@ if (process.env.NODE_ENV !== 'production') {
 const logHandler = ({ error, warning, message }) => {
   if (error) {
     logger.error(error);
+    const exit = process.exit;
+    exit(1);
   } else if (warning) {
     logger.warn(warning);
   } else {

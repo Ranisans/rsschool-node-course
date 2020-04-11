@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 
 const { users, boards, tasks } = require('./tables');
-const logHandler = require('../handlers');
+const { logHandler } = require('../handlers');
 
 const readData = async (filename, table) => {
   return fs
@@ -14,8 +14,6 @@ const readData = async (filename, table) => {
     })
     .catch(error => {
       logHandler({ error });
-      const exit = process.exit;
-      exit(1);
     });
 };
 
