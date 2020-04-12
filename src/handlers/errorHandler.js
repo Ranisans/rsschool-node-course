@@ -24,6 +24,10 @@ const handleError = (err, req, res) => {
     const exit = process.exit;
     exit(1);
   }
+  const { url, method, body, params } = req;
+  logHandler({
+    warning: { message, url, method, body, params }
+  });
 
   res.status(statusCode).json({
     status: 'error',
