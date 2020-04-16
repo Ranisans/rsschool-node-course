@@ -1,6 +1,6 @@
 const { PORT } = require('./common/config');
 const app = require('./app');
-const generateDB = require('./DB/fakeDB');
+const connectToDB = require('./DB/mongoDB');
 const { logHandler } = require('./handlers');
 
 process
@@ -11,8 +11,10 @@ process
     logHandler({ warning });
   });
 
-generateDB();
+const startExpressServer = () => {
+  app.listen(PORT, () =>
+    console.log(`App is running on http://localhost:${PORT}`)
+  );
+};
 
-app.listen(PORT, () =>
-  console.log(`App is running on http://localhost:${PORT}`)
-);
+connectToDB(startExpressServer);
