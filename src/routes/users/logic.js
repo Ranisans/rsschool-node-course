@@ -6,22 +6,22 @@ const {
   updateUserById
 } = require('./repository');
 
-exports.getAllUser = () => {
-  return getAllUser();
+exports.getAllUser = async () => {
+  return await getAllUser();
 };
 
-exports.getUserById = id => {
-  return getUserById(id);
+exports.getUserById = async id => {
+  return await getUserById(id);
 };
 
-exports.addNewUser = ({ name, login, password }) => {
-  return addNewUser({ name, login, password });
+exports.addNewUser = async ({ name, login, password }) => {
+  return await addNewUser({ name, login, password });
 };
 
-exports.updateUserById = ({ id, name, login, password }) => {
-  return updateUserById({ id, name, login, password });
+exports.updateUserById = async ({ id, name, login, password }) => {
+  return await updateUserById({ id, name, login, password });
 };
 
-exports.deleteUserById = id => {
-  return deleteUserById(id);
+exports.deleteUserById = async id => {
+  return await deleteUserById(id);
 };

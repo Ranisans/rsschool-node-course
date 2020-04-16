@@ -15,7 +15,7 @@ router
   .get(async (req, res, next) => {
     try {
       const { id } = req.params;
-      const user = getUserById(id);
+      const user = await getUserById(id);
       if (user === undefined) {
         throw new ErrorHandler(
           HttpStatus.NOT_FOUND,
@@ -37,7 +37,7 @@ router
           HttpStatus.getStatusText(HttpStatus.BAD_REQUEST)
         );
       }
-      const result = updateUserById({ id, name, login, password });
+      const result = await updateUserById({ id, name, login, password });
       if (!result) {
         throw new ErrorHandler(
           HttpStatus.BAD_REQUEST,
@@ -52,7 +52,7 @@ router
   .delete(async (req, res, next) => {
     try {
       const { id } = req.params;
-      const result = deleteUserById(id);
+      const result = await deleteUserById(id);
       if (result) {
         res.sendStatus(HttpStatus.NO_CONTENT);
         return;
@@ -70,7 +70,7 @@ router
   .route('/')
   .get(async (req, res, next) => {
     try {
-      res.json(getAllUser());
+      res.json(await getAllUser());
     } catch (error) {
       next(error);
     }
@@ -84,7 +84,7 @@ router
           HttpStatus.getStatusText(HttpStatus.BAD_REQUEST)
         );
       }
-      const result = addNewUser({ name, login, password });
+      const result = await addNewUser({ name, login, password });
       res.json(result);
     } catch (error) {
       next(error);

@@ -1,50 +1,34 @@
+/* eslint-disable no-unused-vars */
 const uuid = require('uuid');
 
-const { users, tasks } = require('../../DB/tables');
 const { User } = require('../../DB/models');
-const getSingleElementById = require('../logic');
 
-exports.getAllUser = () => {
-  return users.map(User.toResponse);
+exports.getAllUser = async () => {
+  const users = await User.find({}).exec();
+  return users.map(user => User.toResponse(user));
 };
 
-exports.getUserById = id => {
-  return users.filter(user => user.id === id).map(User.toResponse)[0];
-};
-
-exports.addNewUser = ({ name, login, password }) => {
-  const id = uuid();
-  users.push({ id, name, login, password });
-  return { id, name, login };
-};
-
-exports.updateUserById = ({ id, name, login, password }) => {
-  const [user, position] = getSingleElementById(users, id);
-
-  if (user === undefined) {
-    return false;
+exports.getUserById = async id => {
+  const user = await User.findById(id).exec();
+  if (user) {
+    return User.toResponse(user);
   }
-
-  const newUser = { id, name, login, password };
-
-  users[position] = newUser;
-
-  return User.toResponse(newUser);
+  return undefined;
 };
 
-exports.deleteUserById = id => {
-  const [user, position] = getSingleElementById(users, id);
-
-  if (user === undefined) {
-    return false;
+exports.addNewUser = async ({ name, login, password }) => {
+  const user = await User.create({ name, login, password });
+  if (user) {
+    return User.toResponse(user);
   }
+  return undefined;
+};
 
-  tasks.forEach(task => {
-    if (task.userId === user.id) {
-      task.userId = null;
-    }
-  });
+exports.updateUserById = async ({ id, name, login, password }) => {
+  return User.updateOne({ _id: id }, { $set: { name, login, password } });
+};
 
-  users.splice(position, 1);
-  return true;
+exports.deleteUserById = async id => {
+  return User.deleteOne({ _id: id });
+  // TODO add deletion user's tasks
 };
