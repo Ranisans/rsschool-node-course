@@ -26,7 +26,6 @@ router
   .get(async (req, res, next) => {
     try {
       const { taskId } = req.params;
-      console.log('taskId', taskId);
       const { boardId } = req.body;
       const task = await getTaskById({ boardId, taskId });
       if (!task) {
