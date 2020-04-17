@@ -1,4 +1,5 @@
 const { Board } = require('../../DB/models');
+const { deleteTaskByBoardId } = require('../tasks/repository');
 
 exports.getBoardById = async id => {
   const board = await Board.findOne({ _id: id }).exec();
@@ -23,6 +24,10 @@ exports.updateBoardById = async ({ id, title, columns }) => {
 };
 
 exports.deleteBoardById = async id => {
-  return Board.deleteOne({ _id: id });
-  // TODO add deletion board's tasks
+  const result = await Board.deleteOne({ _id: id });
+  if (result.n) {
+    await deleteTaskByBoardId(id);
+    return true;
+  }
+  return false;
 };

@@ -28,3 +28,12 @@ exports.updateTaskById = async data => {
 exports.deleteTaskById = async id => {
   return Task.deleteOne({ _id: id });
 };
+
+exports.deleteTaskByBoardId = async boardId => {
+  return Task.deleteMany({ boardId });
+};
+
+exports.unassignTaskByUserId = async userId => {
+  await Task.updateMany({ userId }, { $set: { userId: null } });
+  return true;
+};

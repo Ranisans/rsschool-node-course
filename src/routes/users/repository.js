@@ -1,7 +1,5 @@
-/* eslint-disable no-unused-vars */
-const uuid = require('uuid');
-
 const { User } = require('../../DB/models');
+const { unassignTaskByUserId } = require('../tasks/repository');
 
 exports.getAllUser = async () => {
   const users = await User.find({}).exec();
@@ -29,6 +27,10 @@ exports.updateUserById = async ({ id, name, login, password }) => {
 };
 
 exports.deleteUserById = async id => {
-  return User.deleteOne({ _id: id });
-  // TODO add deletion user's tasks
+  const result = await User.deleteOne({ _id: id });
+  if (result.n) {
+    await unassignTaskByUserId(id);
+    return true;
+  }
+  return false;
 };
