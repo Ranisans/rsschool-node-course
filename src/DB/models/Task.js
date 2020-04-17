@@ -17,6 +17,11 @@ const taskScheme = mongoose.Schema(
   { versionKey: false }
 );
 
-const Task = mongoose.model('Column', taskScheme);
+taskScheme.static('toResponse', task => {
+  const { _id, title, order, description, userId, boardId, columnId } = task;
+  return { id: _id, title, order, description, userId, boardId, columnId };
+});
+
+const Task = mongoose.model('Task', taskScheme);
 
 module.exports = Task;

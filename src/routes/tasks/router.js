@@ -26,7 +26,9 @@ router
   .get(async (req, res, next) => {
     try {
       const { taskId } = req.params;
-      const task = getTaskById(taskId);
+      console.log('taskId', taskId);
+      const { boardId } = req.body;
+      const task = await getTaskById({ boardId, taskId });
       if (!task) {
         throw new ErrorHandler(
           HttpStatus.NOT_FOUND,
@@ -42,7 +44,7 @@ router
     try {
       const { taskId } = req.params;
       const { title, order, description, userId, boardId, columnId } = req.body;
-      const result = updateTaskById({
+      const result = await updateTaskById({
         id: taskId,
         title,
         order,
@@ -66,7 +68,7 @@ router
   .delete(async (req, res, next) => {
     try {
       const { taskId } = req.params;
-      const result = deleteTaskById(taskId);
+      const result = await deleteTaskById(taskId);
       if (result) {
         res.sendStatus(HttpStatus.NO_CONTENT);
         return;
@@ -85,7 +87,7 @@ router
   .get(async (req, res, next) => {
     try {
       const { boardId } = req.body;
-      const result = getAllTasksByBoardId(boardId);
+      const result = await getAllTasksByBoardId(boardId);
       if (result === false) {
         throw new ErrorHandler(
           HttpStatus.NOT_FOUND,
@@ -101,7 +103,7 @@ router
     try {
       const { title, order, description, userId, boardId, columnId } = req.body;
 
-      const result = addNewTask({
+      const result = await addNewTask({
         title,
         order,
         description,

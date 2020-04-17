@@ -1,73 +1,30 @@
-const uuid = require('uuid');
+const { Task } = require('../../DB/models');
 
-const { tasks } = require('../../DB/tables');
-const getSingleElementById = require('../logic');
-
-exports.getAllTasksByBoardId = id => {
-  return tasks.filter(task => task.boardId === id);
-};
-
-exports.getTaskById = id => {
-  return tasks.filter(task => task.id === id)[0];
-};
-
-exports.addNewTask = ({
-  title,
-  order,
-  description,
-  userId,
-  boardId,
-  columnId
-}) => {
-  const newTask = {
-    id: uuid(),
-    title,
-    order,
-    description,
-    userId,
-    boardId,
-    columnId
-  };
-  tasks.push(newTask);
-  return newTask;
-};
-
-exports.updateTaskById = ({
-  id,
-  title,
-  order,
-  description,
-  userId,
-  boardId,
-  columnId
-}) => {
-  const [task, position] = getSingleElementById(tasks, id);
-
-  if (task === undefined) {
-    return false;
+exports.getAllTasksByBoardId = async id => {
+  const tasks = await Task.find({ boardId: id });
+  if (tasks) {
+    return tasks.map(task => Task.toResponse(task));
   }
-
-  const newTask = {
-    id,
-    title,
-    order,
-    description,
-    userId,
-    boardId,
-    columnId
-  };
-
-  tasks[position] = newTask;
-  return newTask;
+  return undefined;
 };
 
-exports.deleteTaskById = id => {
-  const [task, position] = getSingleElementById(tasks, id);
-
-  if (task === undefined) {
-    return false;
+exports.getTaskById = async ({ boardId, taskId }) => {
+  const task = await Task.findOne({ _id: taskId, boardId }).exec();
+  if (task) {
+    return Task.toResponse(task);
   }
+  return undefined;
+};
 
-  tasks.splice(position, 1);
-  return true;
+exports.addNewTask = async data => {
+  const task = await Task.create(data);
+  return Task.toResponse(task);
+};
+
+exports.updateTaskById = async data => {
+  return Task.updateOne({ _id: data.id }, { $set: data });
+};
+
+exports.deleteTaskById = async id => {
+  return Task.deleteOne({ _id: id });
 };

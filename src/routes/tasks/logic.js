@@ -6,52 +6,26 @@ const {
   updateTaskById
 } = require('./repository');
 
-exports.getAllTasksByBoardId = id => {
-  return getAllTasksByBoardId(id);
+exports.getAllTasksByBoardId = async id => {
+  return await getAllTasksByBoardId(id);
 };
 
-exports.getTaskById = id => {
-  return getTaskById(id);
+exports.getTaskById = async data => {
+  return await getTaskById(data);
 };
 
-exports.addNewTask = ({
-  title,
-  order,
-  description,
-  userId,
-  boardId,
-  columnId
-}) => {
-  return addNewTask({
-    title,
-    order,
-    description,
-    userId,
-    boardId,
-    columnId
-  });
+exports.addNewTask = async data => {
+  return await addNewTask(data);
 };
 
-exports.updateTaskById = ({
-  id,
-  title,
-  order,
-  description,
-  userId,
-  boardId,
-  columnId
-}) => {
-  return updateTaskById({
-    id,
-    title,
-    order,
-    description,
-    userId,
-    boardId,
-    columnId
-  });
+exports.updateTaskById = async data => {
+  const result = await updateTaskById(data);
+  if (result.n) {
+    return await getTaskById({ boardId: data.boardId, taskId: data.id });
+  }
+  return false;
 };
 
-exports.deleteTaskById = id => {
-  return deleteTaskById(id);
+exports.deleteTaskById = async data => {
+  return await deleteTaskById(data);
 };
