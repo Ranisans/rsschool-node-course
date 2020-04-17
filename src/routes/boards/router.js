@@ -30,7 +30,7 @@ router
   .get(async (req, res, next) => {
     try {
       const { id } = req.params;
-      const board = getBoardById(id);
+      const board = await getBoardById(id);
       if (!board) {
         throw new ErrorHandler(
           HttpStatus.NOT_FOUND,
@@ -46,7 +46,7 @@ router
     try {
       const { id } = req.params;
       const { title, columns } = req.body;
-      const result = updateBoardById({ id, title, columns });
+      const result = await updateBoardById({ id, title, columns });
       if (!result) {
         throw new ErrorHandler(
           HttpStatus.NOT_FOUND,
@@ -61,7 +61,7 @@ router
   .delete(async (req, res, next) => {
     try {
       const { id } = req.params;
-      const result = deleteBoardById(id);
+      const result = await deleteBoardById(id);
       if (result) {
         res.sendStatus(HttpStatus.NO_CONTENT);
         return;
@@ -79,7 +79,7 @@ router
   .route('/')
   .get(async (req, res, next) => {
     try {
-      res.json(getAllBoard());
+      res.json(await getAllBoard());
     } catch (error) {
       next(error);
     }
@@ -87,7 +87,7 @@ router
   .post(middleware(boardSchema), async (req, res, next) => {
     try {
       const { title, columns } = req.body;
-      const result = addNewBoard({ title, columns });
+      const result = await addNewBoard({ title, columns });
       if (!result) {
         throw new ErrorHandler(
           HttpStatus.BAD_REQUEST,

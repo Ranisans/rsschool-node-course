@@ -1,78 +1,28 @@
-const uuid = require('uuid');
+const { Board } = require('../../DB/models');
 
-const getSingleElementById = require('../logic');
-const { boards } = require('../../DB/tables');
-const { addNewColumn } = require('../columns/logic');
-const { getAllTasksByBoardId, deleteTaskById } = require('../tasks/logic');
-
-const createColumns = columns => {
-  const result = [];
-  for (let i = 0; i < columns.length; i += 1) {
-    const column = addNewColumn(columns[i]);
-    if (column === false) {
-      return false;
-    }
-    result.push(column);
+exports.getBoardById = async id => {
+  const board = await Board.findOne({ _id: id }).exec();
+  if (board) {
+    return Board.toResponse(board);
   }
-  return result;
+  return undefined;
 };
 
-exports.getBoardById = id => {
-  return boards.filter(singleBoard => singleBoard.id === id)[0];
+exports.getAllBoards = async () => {
+  const boards = await Board.find({});
+  return boards.map(board => Board.toResponse(board));
 };
 
-exports.getAllBoards = () => boards;
-
-exports.addNewBoard = ({ title, columns }) => {
-  const id = uuid();
-  const newBoard = { id, title };
-  const newColumns = createColumns(columns);
-  if (newColumns === false) {
-    return false;
-  }
-  newBoard.columns = newColumns;
-  boards.push(newBoard);
-  return newBoard;
+exports.addNewBoard = async ({ title, columns }) => {
+  const board = await Board.create({ title, columns });
+  return Board.toResponse(board);
 };
 
-exports.updateBoardById = ({ id, title, columns }) => {
-  const [board, position] = getSingleElementById(boards, id);
-
-  if (board === undefined) {
-    return false;
-  }
-
-  const newBoard = { id, title };
-
-  const columnsWithId = [];
-  const columnsWithoutId = [];
-
-  columns.forEach(column => {
-    if (column.id === undefined) {
-      columnsWithoutId.push(column);
-    } else {
-      columnsWithId.push(column);
-    }
-  });
-
-  newBoard.columns = columnsWithId.concat(createColumns(columnsWithoutId));
-
-  boards[position] = newBoard;
-
-  return newBoard;
+exports.updateBoardById = async ({ id, title, columns }) => {
+  return Board.updateOne({ _id: id }, { $set: { title, columns } });
 };
 
-exports.deleteBoardById = id => {
-  const [board, position] = getSingleElementById(boards, id);
-
-  if (board === undefined) {
-    return false;
-  }
-
-  const boardsTasksId = getAllTasksByBoardId(board.id).map(task => task.id);
-
-  boardsTasksId.forEach(taskId => deleteTaskById(taskId));
-
-  boards.splice(position, 1);
-  return true;
+exports.deleteBoardById = async id => {
+  return Board.deleteOne({ _id: id });
+  // TODO add deletion board's tasks
 };

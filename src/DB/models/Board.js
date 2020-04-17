@@ -1,7 +1,13 @@
 const mongoose = require('mongoose');
 const uuid = require('uuid');
 
-const boardScheme = mongoose.Schema(
+const transformColumnFromDBToClientView = column => ({
+  id: column._id,
+  title: column.title,
+  order: column.order
+});
+
+const boardSchema = mongoose.Schema(
   {
     title: String,
     columns: [
@@ -22,6 +28,14 @@ const boardScheme = mongoose.Schema(
   { versionKey: false }
 );
 
-const Board = mongoose.model('Board', boardScheme);
+boardSchema.static('toResponse', board => {
+  const { _id, title, columns } = board;
+  const columnsData = columns.map(column =>
+    transformColumnFromDBToClientView(column)
+  );
+  return { id: _id, title, columns: columnsData };
+});
+
+const Board = mongoose.model('Board', boardSchema);
 
 module.exports = Board;
