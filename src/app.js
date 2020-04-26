@@ -5,7 +5,8 @@ const YAML = require('yamljs');
 
 const userRouter = require('./routes/users/router');
 const boardsRouter = require('./routes/boards/router');
-const { logMiddleware, errorMiddleware } = require('./middleware');
+const authenticationRouter = require('./routes/authentication/router');
+const { logMiddleware, errorMiddleware, withAuth } = require('./middleware');
 const { ErrorHandler } = require('./handlers');
 
 const app = express();
@@ -23,6 +24,12 @@ app.use('/', (req, res, next) => {
   }
   next();
 });
+
+app.use('/login', authenticationRouter);
+
+// before it - not need a token
+app.use(withAuth);
+// after it - token needed
 
 app.use('/users', userRouter);
 app.use('/boards', boardsRouter);
