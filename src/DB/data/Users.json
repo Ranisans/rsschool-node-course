@@ -28,5 +28,11 @@
     "name": "Garett.Nader70",
     "login": "Chyna24@yahoo.com",
     "password": "lNcZnSmEIhflfQ8"
+  },
+  {
+    "_id": "d1666e2d-0622-4ecc-90b3-a57e5a5a44b1",
+    "name": "admin",
+    "login": "admin",
+    "password": "admin"
   }
 ]
