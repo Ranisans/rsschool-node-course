@@ -20,7 +20,11 @@ const logger = createLogger({
 if (process.env.NODE_ENV !== 'production') {
   logger.add(
     new transports.Console({
-      format: format.json()
+      format: format.combine(
+        format.json(),
+        format.prettyPrint(true),
+        format.colorize(true)
+      )
     })
   );
 }
